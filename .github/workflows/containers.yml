@@ -80,11 +80,36 @@ jobs:
           driver-opts: image=moby/buildkit:master
 
       # master branch -> :dev container tag
+      - name: Build and push :dev
+        id: docker_build
+        if: ${{ github.ref }} == "refs/heads/master"
+        uses: docker/build-push-action@v6
+        with:
+          context: ./
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_HUB_USERNAME }}/changedetection.io:dev,ghcr.io/${{ github.repository }}:dev
+          platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v8,linux/arm64/v8
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
 # Looks like this was disabled
 #          provenance: false
 
       # A new tagged release is required, which builds :tag and :latest
+      - name: Docker meta :tag
+        if: github.event_name == 'release' && startsWith(github.event.release.tag_name, '0.')
+        uses: docker/metadata-action@v5
+        id: meta
+        with:
+            images: |
+                ${{ secrets.DOCKER_HUB_USERNAME }}/changedetection.io
+                ghcr.io/dgtlmoon/changedetection.io
+            tags: |
+                type=semver,pattern={{version}}
+                type=semver,pattern={{major}}.{{minor}}
+                type=semver,pattern={{major}}
 
       - name: Build and push :tag
         id: docker_build_tag_release
