@@ -68,7 +68,8 @@ def construct_blueprint(datastore: ChangeDetectionStore):
         try:
             # use the same as when it is triggered, but then override it with the form test values
             n_object = {
-                'watch_url': request.form.get('window_url', "https://changedetection.io"),
+                'watch_url': watch.get('url', "https://changedetection.io") if watch else "https://changedetection.io",
+                'uuid': watch_uuid,
                 'notification_urls': notification_urls
             }
 
