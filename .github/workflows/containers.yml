@@ -89,8 +89,8 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKER_HUB_USERNAME }}/changedetection.io:dev,ghcr.io/${{ github.repository }}:dev
-          platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v8,linux/arm64/v8
+            ghcr.io/${{ github.repository }}:dev
+          platforms: linux/amd64
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -104,8 +104,7 @@ jobs:
         id: meta
         with:
             images: |
-                ${{ secrets.DOCKER_HUB_USERNAME }}/changedetection.io
-                ghcr.io/dgtlmoon/changedetection.io
+                ghcr.io/${{ github.repository }}
             tags: |
                 type=semver,pattern={{version}}
                 type=semver,pattern={{major}}.{{minor}}
@@ -120,7 +119,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-          platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v8,linux/arm64/v8
+          platforms: linux/amd64
           cache-from: type=gha
           cache-to: type=gha,mode=max
 # Looks like this was disabled
